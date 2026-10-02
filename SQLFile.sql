@@ -90,3 +90,18 @@ INNER JOIN operators o
     ON o.operator_id = r.operator_id
 WHERE r.arriving_3min_pct IS NOT NULL
 ORDER BY r.start_of_period, punctuality_rank;
+
+-- HOW DO THE 59 SECOND, 3 MINUTE AND 15 MINUTE MEASURES COMPARE PER OPERATOR?
+
+SELECT o.operator_name,
+    ROUND(AVG(r.arriving_59s_pct), 1)  AS avg_59s,
+    ROUND(AVG(r.arriving_3min_pct), 1) AS avg_3min,
+    ROUND(AVG(r.arriving_15min_pct), 1) AS avg_15min
+FROM rail_punctuality r
+INNER JOIN operators o
+ON o.operator_id=r.operator_id
+WHERE r.arriving_59s_pct IS NOT NULL
+  AND r.arriving_3min_pct IS NOT NULL
+  AND r.arriving_15min_pct IS NOT NULL
+GROUP BY o.operator_name
+ORDER BY avg_3min DESC;
