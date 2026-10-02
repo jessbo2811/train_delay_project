@@ -74,3 +74,19 @@ SELECT
     ROUND(pct - prev_year, 2) AS yoy_change
 FROM quarterly
 ORDER BY operator_name, start_of_period;
+
+-- WHICH OPERATOR HAS THE BEST PUNCTUALITY PER QUARTER? (RANKED)
+
+SELECT
+    r.start_of_period,
+    o.operator_name,
+    r.arriving_3min_pct,
+    RANK() OVER (
+        PARTITION BY r.start_of_period
+        ORDER BY r.arriving_3min_pct DESC
+    ) AS punctuality_rank
+FROM rail_punctuality r
+INNER JOIN operators o
+    ON o.operator_id = r.operator_id
+WHERE r.arriving_3min_pct IS NOT NULL
+ORDER BY r.start_of_period, punctuality_rank;
